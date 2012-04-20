@@ -1,0 +1,126 @@
+## Sample Makefile for eliom application.
+
+
+APP_NAME := ocsibase
+
+## Packages required to build the server part of the application
+SERVER_PACKAGES := threads core
+
+## Packages to be linked in the client part
+
+CLIENT_PACKAGES :=
+
+## Source files for the server part
+COMMON_FILES := \
+  std.eliom	    \
+  services.eliom	    \
+  authentication.eliom \
+  template.eliom	   \
+  ocsibase.eliom
+SERVER_FILES := $(COMMON_FILES)
+CLIENT_FILES := $(COMMON_FILES)
+
+
+ELIOMC      := eliomc -thread -I . -I ../src/simple_pam
+ELIOMOPT    := eliomopt -thread -I . -I ../src/simple_pam
+
+ELIOMDEPSERVER := eliomdep -server -I .
+ELIOMDEPCLIENT := eliomdep -client -I .
+
+JS_OF_ELIOM := js_of_eliom -I _client/ -I . -I ../src/simple_pam
+
+## Where to put intermediate object files.
+## - ELIOM_{SERVER,CLIENT}_DIR must be distinct
+## - ELIOM_CLIENT_DIR mustn't be the local dir.
+## - ELIOM_SERVER_DIR could be ".", but you need to
+##   remove it from the "clean" rules...
+
+export ELIOM_SERVER_DIR := _server
+export ELIOM_CLIENT_DIR := _client
+export ELIOM_TYPE_DIR   := .
+
+# Build a concatenanted CSS there:
+${APP_NAME}.css:
+	echo "" > $@
+
+
+#####################################
+
+all: byte opt ${APP_NAME}.css ${APP_NAME}.js
+byte:: ${APP_NAME}.cma 
+opt:: ${APP_NAME}.cmxs 
+
+#### Server side compilation #######
+
+SERVER_INC  := ${addprefix -package ,${SERVER_PACKAGES}}
+
+SERVER_OBJS := $(patsubst %.eliom,${ELIOM_SERVER_DIR}/%.cmo, ${SERVER_FILES})
+SERVER_OBJS := $(patsubst %.ml,${ELIOM_SERVER_DIR}/%.cmo, ${SERVER_OBJS})
+
+${APP_NAME}.cma: ${SERVER_OBJS}
+	${ELIOMC} -a -o $@ $^
+${APP_NAME}.cmxa: ${SERVER_OBJS:.cmo=.cmx}
+	${ELIOMOPT} -a -o $@ $^
+
+${ELIOM_TYPE_DIR}/%.type_mli: %.eliom
+	${ELIOMC} -infer ${SERVER_INC} $<
+
+${ELIOM_SERVER_DIR}/%.cmi: %.mli
+	${ELIOMC} -c ${SERVER_INC} $<
+
+${ELIOM_SERVER_DIR}/%.cmo: %.ml
+	${ELIOMC} -c ${SERVER_INC} $<
+${ELIOM_SERVER_DIR}/%.cmo: %.eliom
+	${ELIOMC} -c -noinfer ${SERVER_INC} $<
+
+${ELIOM_SERVER_DIR}/%.cmx: %.ml
+	${ELIOMOPT} -c ${SERVER_INC} $<
+${ELIOM_SERVER_DIR}/%.cmx: %.eliom
+	${ELIOMOPT} -c -noinfer ${SERVER_INC} $<
+
+%.cmxs: %.cmxa
+	$(ELIOMOPT) -shared -linkall -o $@ $<
+
+##### Client side compilation ####
+
+CLIENT_LIBS := ${addprefix -package ,${CLIENT_PACKAGES}}
+CLIENT_INC  := ${addprefix -package ,${CLIENT_PACKAGES}}
+
+CLIENT_OBJS := $(patsubst %.eliom,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_FILES})
+CLIENT_OBJS := $(patsubst %.ml,${ELIOM_CLIENT_DIR}/%.cmo, ${CLIENT_OBJS})
+
+${APP_NAME}.js: ${CLIENT_OBJS}
+	${JS_OF_ELIOM} -o $@ ${CLIENT_LIBS} $^
+
+${ELIOM_CLIENT_DIR}/%.cmi: %.eliom
+	${JS_OF_ELIOM} -c ${CLIENT_INC} $<
+
+${ELIOM_CLIENT_DIR}/%.cmo: %.eliom
+	${JS_OF_ELIOM} -c ${CLIENT_INC} $<
+${ELIOM_CLIENT_DIR}/%.cmo: %.ml
+	${JS_OF_ELIOM} -c ${CLIENT_INC} $<
+
+############
+
+## Clean up
+
+clean:
+	-rm -f *.cm[ioax] *.cmxa *.cmxs *.o *.a *.annot
+	-rm -f *.type_mli
+	-rm -f ${APP_NAME}.js
+	-rm -rf ${ELIOM_CLIENT_DIR} ${ELIOM_SERVER_DIR}
+
+distclean: clean.local
+	-rm -f *~ \#* .\#*
+
+## Dependencies
+
+depend: .depend
+.depend:
+	$(ELIOMDEPSERVER) ${SERVER_INC} ${SERVER_FILES} > .depend
+	$(ELIOMDEPCLIENT) ${CLIENT_INC} ${CLIENT_FILES} >> .depend
+	ocaml ../../bin/fake_eliomdep.ml $(patsubst %.eliom,%,${COMMON_FILES}) >> .depend
+## Warning: Dependencies towards *.eliom are not handled by eliomdep yet.
+
+include .depend
+

@@ -1,0 +1,24 @@
+OASISFormat: 0.2
+Name:        Ocsibase
+Version:     0.0
+Synopsis:    Some Website
+Authors:     Sebastien Mondet
+License:     PROP
+Plugins:     META (0.2)
+BuildTools:  ocamlbuild
+
+Library simple_pam
+  Path: src/simple_pam
+  Modules: Simple_pam
+  CSources: simple_pam_stubs.c
+  Install: false
+  CCLib: -lpam -lresolv
+
+Executable ocsimgr
+  Path:   src/app
+  MainIs: ocsimgr.ml
+  BuildTools:  ocamlbuild
+  BuildDepends: threads, core
+  CompiledObject: best
+
+                   
