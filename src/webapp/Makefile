@@ -16,7 +16,7 @@ COMMON_FILES := \
   services.eliom	    \
   authentication.eliom \
   template.eliom	   \
-  ocsibase.eliom
+  main.eliom
 SERVER_FILES := $(COMMON_FILES)
 CLIENT_FILES := $(COMMON_FILES)
 
