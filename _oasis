@@ -14,7 +14,7 @@ Library simple_pam
   Install: false
   CCLib: -lpam -lresolv
 
-Executable ocsimgr
+Executable "ocsibase-manager"
   Path:   src/app
   MainIs: ocsimgr.ml
   BuildTools:  ocamlbuild
