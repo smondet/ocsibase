@@ -1,5 +1,75 @@
 
-A Ready To Use Ocsigen base website
+A Ready To Use Ocsigen Base Website
+===================================
 
 
 
+
+Build
+=====
+
+Somewhat standard OCaml build process:
+
+    oasis setup
+    ocaml setup.ml -configure --prefix /some/path
+    make
+    make static
+  
+The last command is optional, it builds the statically compiled
+version of the web-application.
+
+You may run `make install' to install the ocsibase-manager
+application, but it is kind-of useless.
+
+Run
+===
+
+The application `ocsibase-manager` takes care of launching/preparing the
+web-server with the right auto-generated configuration files and directories.
+It has three commands:
+
+Run in Test Mode
+----------------
+
+Use
+
+    _build/src/app/ocsibase-manager test -help
+
+to run the website in byte-code mode.
+
+Example:
+
+    ocsibase-manager test -port 8080 -ssl cert.pem privkey-unsec.pem -ssl-dir .
+
+and go to visit http://localhost:8080/
+If you indeed provided the SSL certificate you can switch to HTTPS (on
+port 8080 - 80 + 443 = 8443).
+
+See Ocsigen's documentation for creating 'test' self-signed SSL certificates:
+http://ocsigen.org/ocsigenserver/manual/config
+
+In "Test Mode” the access-rights management in disabled (all
+capability tests return `true`).
+
+Statically Linked Server
+------------------------
+
+After having done a `make static' one can run the ocsibaseserver
+application (the statically and natively compiled web-server with the
+web-app included).
+
+Example:
+
+    _build/src/app/ocsibase-manager static -port 8080
+
+Create an RPM
+-------------
+
+The 'rpm' command creates an RPM containing the statically linked
+web-server, config-files, a SysV /etc/init.d scripts.
+It uses 'rpmbuild' (tested so far only on CentOS 6).
+
+    _build/src/app/ocsibase-manager rpm -rpm-version 0.42 -rpm-release 2 \
+       -ssl official-cert.pem real-privkey.key -ssl /etc/real-ssl-stuff/
+       
+         
