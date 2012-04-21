@@ -3,7 +3,7 @@ Name:        Ocsibase
 Version:     0.0
 Synopsis:    Some Website
 Authors:     Sebastien Mondet
-License:     PROP
+License:     ISC
 Plugins:     META (0.2)
 BuildTools:  ocamlbuild
 
