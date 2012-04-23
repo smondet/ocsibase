@@ -65,14 +65,11 @@ let () =
       in
 
       let () =
-        let pam_service = ref None in
         let debug_mode = ref false in
         let open Simplexmlparser in
         
         let rec go_through = function
           | Element ("debug", [], []) -> debug_mode := true
-          | Element ("pam-authentication-service", [], [PCData p]) ->
-            pam_service := Some p
           | Element (tag, atts, inside) ->
             Ocsigen_messages.console (fun () ->
               sprintf "Unknown Config XML Tag: %s\n" tag);
@@ -80,7 +77,7 @@ let () =
           | PCData s -> ()
         in
         List.iter (Eliom_config.get_config ()) ~f:go_through;
-        Authentication.init ~disabled:!debug_mode ?pam_service:!pam_service ();
+        Authentication.init ~disabled:!debug_mode ();
       in
 
       Services.(register default) (Default_service.make);

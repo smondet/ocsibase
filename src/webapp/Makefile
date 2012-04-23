@@ -21,13 +21,13 @@ SERVER_FILES := $(COMMON_FILES)
 CLIENT_FILES := $(COMMON_FILES)
 
 
-ELIOMC      := eliomc -thread -I . -I ../src/simple_pam
-ELIOMOPT    := eliomopt -thread -I . -I ../src/simple_pam
+ELIOMC      := eliomc -thread -I .
+ELIOMOPT    := eliomopt -thread -I .
 
 ELIOMDEPSERVER := eliomdep -server -I .
 ELIOMDEPCLIENT := eliomdep -client -I .
 
-JS_OF_ELIOM := js_of_eliom -I _client/ -I . -I ../src/simple_pam
+JS_OF_ELIOM := js_of_eliom -I _client/ -I .
 
 ## Where to put intermediate object files.
 ## - ELIOM_{SERVER,CLIENT}_DIR must be distinct

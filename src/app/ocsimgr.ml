@@ -91,7 +91,7 @@ video/vnd.mpegurl		mxu m4u
 video/x-msvideo			avi
 "
 
-let config ?(debug=false) ?ssl ?(port=80) ?(authentication=`pam "login") 
+let config ?(debug=false) ?ssl ?(port=80)
     ~runtime_root ?conf_root ?ssl_dir
     ~static_dirs ?log_root kind output_string =
   let out = output_string in
@@ -104,7 +104,6 @@ let config ?(debug=false) ?ssl ?(port=80) ?(authentication=`pam "login")
       sprintf "
     <extension findlib-package=\"ocsigenserver.ext.staticmod\"/>
     <extension findlib-package=\"core\"/>
-    <extension module=\"_build/src/simple_pam/simple_pam.cma\"/>
     <extension findlib-package=\"ocsigenserver.ext.ocsipersist-sqlite\">
       <database file=\"%s/ocsidb\"/>
     </extension>
@@ -145,11 +144,6 @@ let config ?(debug=false) ?ssl ?(port=80) ?(authentication=`pam "login")
     line out " <static dir=\"%s/\" />" static_dir;
   );
   line out " %s\n" website_module;
-  begin match authentication with
-  | `none -> ()
-  | `pam s -> 
-    line out "  <pam-authentication-service>%s</pam-authentication-service>" s
-  end;
   if debug then output_string "<debug/>\n";
   line out "</eliom>";
   line out "</host>";
@@ -178,14 +172,13 @@ let testing ?(add_static_dirs=[]) ?authentication ?debug
     ~f:(fun o -> output_string o (mime_types));
   with_file (sprintf "%s/ocsibase.conf" runtime_root)
     ~f:(fun o ->
-      config ?authentication ?ssl ?ssl_dir ?debug ~static_dirs
+      config ?ssl ?ssl_dir ?debug ~static_dirs
         ~port ~runtime_root kind (output_string o));
   syscmdf_exn "cp _build/ocsibase/ocsibase.js %s/static/" runtime_root;
   syscmdf_exn "cp _build/ocsibase/ocsibase.css %s/static/" runtime_root;
   begin match kind with
   | `Ocsigen ->
-    syscmdf_exn "LD_LIBRARY_PATH=_build/src/simple_pam/:$LD_LIBRARY_PATH \
-                 ocsigenserver -c %s/ocsibase.conf" runtime_root;
+    syscmdf_exn "ocsigenserver -c %s/ocsibase.conf" runtime_root;
   | `Static -> 
     syscmdf_exn "ocsibaseserver -c %s/ocsibase.conf" runtime_root;
   end;

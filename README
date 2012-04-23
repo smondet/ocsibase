@@ -76,10 +76,7 @@ It uses 'rpmbuild' (tested so far only on CentOS 6).
 Licensing
 =========
 
-The code in `src/simple_pam/simple_pam_stubs.c` has been extracted from XEN-API's
-https://github.com/xen-org/xen-api
-its license is hence LGPL+OCaml-link-exn.
-Everything else is under the ISC license:
+Everything is under the ISC license:
 http://en.wikipedia.org/wiki/ISC_license
 
 

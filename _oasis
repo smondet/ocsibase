@@ -7,13 +7,6 @@ License:     ISC
 Plugins:     META (0.2)
 BuildTools:  ocamlbuild
 
-Library simple_pam
-  Path: src/simple_pam
-  Modules: Simple_pam
-  CSources: simple_pam_stubs.c
-  Install: false
-  CCLib: -lpam -lresolv
-
 Executable "ocsibase-manager"
   Path:   src/app
   MainIs: ocsimgr.ml

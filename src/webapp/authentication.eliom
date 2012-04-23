@@ -61,10 +61,8 @@ let authentication_history =
     ~scope:Eliom_common.session ([]: authentication_state list)
    
 let global_authentication_disabled = ref false
-let global_pam_service = ref ("")  
 
-let init ?(disabled=false) ?(pam_service="") () =
-  global_pam_service := pam_service;
+let init ?(disabled=false) () =
   global_authentication_disabled := disabled
 
   
@@ -94,21 +92,11 @@ let find_user login =
   | "ocsibaseuser"  -> return { id = login; roles = [`user] }
   | _ -> error `user_not_found
       
-let pam_auth ?service ~user ~password () =
-  let service =
-    Option.value ~default:!global_pam_service service in
-  let wrap_pam f a = try Ok (f a) with e -> Error (`pam_exn e) in
-  let auth () =
-     wrap_pam (Simple_pam.authenticate service user) (password) 
-  in
-  Lwt_preemptive.detach auth () 
-      
 let check = function
   | `user_password (identifier, password) ->
     let checking_m =
       find_user identifier >>= fun person ->
-      pam_auth ~user:person.id ~password ()
-      >>= fun () ->
+      (* *TODO* Check password HERE *)
       return person
     in
     double_bind checking_m
