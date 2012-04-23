@@ -18,7 +18,7 @@ build: mount_ocsibase
 	make -C _build/ocsibase all
 	ocaml setup.ml -build
 
-static: install
+static:
 	ocamlfind ocamlopt -linkall \
 	    -package ocsigenserver,ocsigenserver.ext.ocsipersist-sqlite  \
 	    -package eliom.server,ocsigenserver.ext.staticmod,core  \
