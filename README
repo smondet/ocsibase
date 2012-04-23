@@ -82,3 +82,19 @@ its license is hence LGPL+OCaml-link-exn.
 Everything else is under the ISC license:
 http://en.wikipedia.org/wiki/ISC_license
 
+
+How To Change The Name
+======================
+
+Clean-up everything you can:
+
+    make clean
+    ocaml setup.ml -distclean
+    oasis setup-clean
+     
+And then run this command (with some other name than 'mywww'):
+
+    find . -type f -not -wholename "*/.git/*" \
+           -exec  sed -i "s/[oO]csibase/mywww/g" {} \;
+
+
