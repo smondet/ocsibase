@@ -20,14 +20,14 @@ open Std
 let make = make_delayed
 
 let default =
-  make (Eliom_services.service ~path:[""] ~get_params:Eliom_parameters.unit)
+  make (Eliom_service.service ~path:[""] ~get_params:Eliom_parameter.unit)
 let home =
-  make (Eliom_services.service ~path:["home"] ~get_params:Eliom_parameters.unit)
+  make (Eliom_service.service ~path:["home"] ~get_params:Eliom_parameter.unit)
     
 let stylesheet =
-  make (Eliom_services.service
+  make (Eliom_service.service
           ~path:["ocsibase_stylesheet"]
-          ~get_params: Eliom_parameters.unit)
+          ~get_params: Eliom_parameter.unit)
 
 let register f =
   Output_app.register 
@@ -48,4 +48,4 @@ let register f =
 
 
 let register_css f =
-  Eliom_output.CssText.register ~service:(f ())
+  Eliom_registration.CssText.register ~service:(f ())

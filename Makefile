@@ -14,7 +14,7 @@ TO_MOUNT=$(patsubst src/webapp/%,_build/ocsibase/%,${wildcard src/webapp/*})
 mount_ocsibase:: _build/ocsibase $(TO_MOUNT)
 
 build: mount_ocsibase
-	ocaml setup.ml -build simple_pam.mllib
+	ocaml setup.ml -build src/simple_pam/simple_pam.mllib
 	make -C _build/ocsibase all
 	ocaml setup.ml -build
 
@@ -23,7 +23,7 @@ static:
 	    -package ocsigenserver,ocsigenserver.ext.ocsipersist-sqlite  \
 	    -package eliom.server,ocsigenserver.ext.staticmod,core  \
              -I _build/src/simple_pam/ simple_pam.cmxa \
-	     _build/ocsibase/ocsibase.cmxa \
+	     _build/src/app/ocsimgr.cmx \
 	     server_main.cmx -o ocsibaseserver -linkpkg -thread
 
 install: build

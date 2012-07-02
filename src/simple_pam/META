@@ -1,0 +1,9 @@
+# OASIS_START
+# DO NOT EDIT (digest: e56cd3f478c8e33fc800ee2fab0e505e)
+version = "0.0"
+description = "Some Website"
+archive(byte) = "simple_pam.cma"
+archive(native) = "simple_pam.cmxa"
+exists_if = "simple_pam.cma"
+# OASIS_STOP
+

@@ -1,0 +1,31 @@
+# OASIS_START
+# DO NOT EDIT (digest: e2b314b94e7f057cfcf581b5b3b184d9)
+# Ignore VCS directories, you can use the same kind of rule outside 
+# OASIS_START/STOP if you want to exclude directories that contains 
+# useless stuff for the build process
+<**/.svn>: -traverse
+<**/.svn>: not_hygienic
+".bzr": -traverse
+".bzr": not_hygienic
+".hg": -traverse
+".hg": not_hygienic
+".git": -traverse
+".git": not_hygienic
+"_darcs": -traverse
+"_darcs": not_hygienic
+# Executable ocsibase-manager
+<src/app/ocsimgr.{native,byte}>: pkg_threads
+<src/app/ocsimgr.{native,byte}>: pkg_core
+<src/app/*.ml{,i}>: pkg_threads
+<src/app/*.ml{,i}>: pkg_core
+# Library simple_pam
+"src/simple_pam/simple_pam.cmxs": use_simple_pam
+<src/simple_pam/simple_pam.{cma,cmxa}>: oasis_library_simple_pam_cclib
+"src/simple_pam/libsimple_pam_stubs.lib": oasis_library_simple_pam_cclib
+"src/simple_pam/dllsimple_pam_stubs.dll": oasis_library_simple_pam_cclib
+"src/simple_pam/libsimple_pam_stubs.a": oasis_library_simple_pam_cclib
+"src/simple_pam/dllsimple_pam_stubs.so": oasis_library_simple_pam_cclib
+<src/simple_pam/simple_pam.{cma,cmxa}>: use_libsimple_pam_stubs
+# OASIS_STOP
+true: annot
+

@@ -35,7 +35,7 @@ module Default_service = struct
 end
 
 let () =
-  Eliom_services.register_eliom_module
+  Eliom_service.register_eliom_module
     "ocsibase" 
     (fun () ->
       
@@ -55,9 +55,9 @@ let () =
            404. anyway, It Works™.
         *)        
         let send ?code e =
-          Lwt.bind (Template.default (error e)) (Eliom_output.Html5.send ?code)
+          Lwt.bind (Template.default (error e)) (Eliom_registration.Html5.send ?code)
         in
-        Eliom_output.set_exn_handler (function
+        Eliom_registration.set_exn_handler (function
           | Eliom_common.Eliom_404 -> send ~code:404 `eliom_404
           | Eliom_common.Eliom_Wrong_parameter -> send `eliom_wrong_parameter
           | Eliom_common.Eliom_Typing_Error l -> send (`eliom_typing_error l)
