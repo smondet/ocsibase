@@ -152,13 +152,13 @@ let config ?(debug=false) ?ssl ?(port=80)
 
 let syscmd s =
   match Unix.system s with
-  | `Exited 0 -> Ok ()
-  | e -> Error (Failure (Unix.Process_status.to_string_hum e))
+  | Ok () -> Ok ()
+  | Error _ as e -> Error (Failure (Unix.Exit_or_signal.to_string_hum e))
 
 let syscmdf fmt =
   ksprintf syscmd fmt
 
-let syscmd_exn s = syscmd s |! Result.raise_error
+let syscmd_exn s = syscmd s |! Result.ok_exn
 let syscmdf_exn fmt = ksprintf syscmd_exn fmt
 
 let testing ?(add_static_dirs=[]) ?authentication ?debug
@@ -319,7 +319,7 @@ let rpm_build ?(add_static_dirs=[]) ?(version="0.0") ?(release=1) ?ssl ?ssl_dir 
     match Unix.system 
       "test \"`ocamlfind list | grep batteries | grep 1.4 | wc -l`\" -eq 0"
     with
-    | `Exited 1 -> 
+    | Error (`Exit_non_zero 1) -> 
       printf
         "ERR: It seems to be the wrong version of Batteries, \
           I won't continue:\n";

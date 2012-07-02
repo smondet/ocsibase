@@ -22,6 +22,7 @@ static:
 	    -package ocsigenserver,ocsigenserver.ext.ocsipersist-sqlite  \
 	    -package eliom.server,ocsigenserver.ext.staticmod,core  \
 	     _build/ocsibase/ocsibase.cmxa \
+#	     _build/src/app/ocsimgr.cmx 
 	     server_main.cmx -o ocsibaseserver -linkpkg -thread
 
 install: build

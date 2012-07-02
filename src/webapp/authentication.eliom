@@ -57,7 +57,7 @@ type authentication_state = [
 ]
 
 let authentication_history =
-  Eliom_references.eref ~secure:true
+  Eliom_reference.eref ~secure:true
     ~scope:Eliom_common.session ([]: authentication_state list)
    
 let global_authentication_disabled = ref false
@@ -68,19 +68,19 @@ let init ?(disabled=false) () =
   
 let set_state s =
   let on_exn e = `auth_state_exn e in
-  wrap_io ~on_exn Eliom_references.get authentication_history
+  wrap_io ~on_exn Eliom_reference.get authentication_history
   >>= fun ah ->
-  wrap_io ~on_exn (Eliom_references.set authentication_history) (s :: ah)
+  wrap_io ~on_exn (Eliom_reference.set authentication_history) (s :: ah)
 
 let get_state () =
   let on_exn e = `auth_state_exn e in
-  wrap_io ~on_exn Eliom_references.get authentication_history
+  wrap_io ~on_exn Eliom_reference.get authentication_history
   >>= function
   | [] | `nothing :: _ -> return `nothing
   | h :: t -> return h
 
 let user_logged () =
-  wrap_io Eliom_references.get authentication_history
+  wrap_io Eliom_reference.get authentication_history
   >>= function
   | `user_logged u :: _ -> return (Some u)
   | _ -> return None
@@ -126,10 +126,10 @@ let login_coservice =
            for every login.
            The function Authentication.check handles the
            session-dependent stuff. *)
-        Eliom_output.Action.register_post_coservice'
+        Eliom_registration.Action.register_post_coservice'
           (* ~fallback:Services.(home ()) *)
           ~https:true
-          ~post_params:Eliom_parameters.(string "user" ** string "pwd")
+          ~post_params:Eliom_parameter.(string "user" ** string "pwd")
           (fun () (user, pwd) ->
             if Eliom_request_info.get_ssl ()
             then (check (`user_password (user,pwd))
@@ -149,8 +149,8 @@ let logout_coservice =
     | None ->
       let open Lwt in
       let handler =
-        Eliom_output.Action.register_post_coservice'
-          ~post_params:Eliom_parameters.unit
+        Eliom_registration.Action.register_post_coservice'
+          ~post_params:Eliom_parameter.unit
           (fun () () -> 
             logout () >>= function
             | Ok () -> return ()
@@ -164,16 +164,16 @@ let login_form ?set_visibility_to () =
   let open Html5 in
   let form_span_id = "span_login_form" in
   let message_span_id = "span_login_message" in
-  Eliom_output.Html5.post_form ~service:(login_coservice ())
+  Eliom_content.Html5.F.post_form ~service:(login_coservice ())
     (fun (name, pwd) ->
       [
         span ~a:[ a_id message_span_id; a_style "visibility: hidden" ] [];
         span ~a:[ a_id form_span_id;]
           [pcdata "Login: ";
-          Eliom_output.Html5.string_input ~input_type:`Text ~name ();
+          Eliom_content.Html5.F.string_input ~input_type:`Text ~name ();
           pcdata " Password: ";
-          Eliom_output.Html5.string_input ~input_type:`Password ~name:pwd ();
-          Eliom_output.Html5.string_input
+          Eliom_content.Html5.F.string_input ~input_type:`Password ~name:pwd ();
+          Eliom_content.Html5.F.string_input
             ~a:[
               (* The onclick seems to work also when the user types <enter>
                  but onsubmit does not seem to to anything (?)
@@ -201,10 +201,10 @@ let login_form ?set_visibility_to () =
 
 let logout_form () =
   let open Html5 in
-  Eliom_output.Html5.post_form ~service:(logout_coservice ())
+  Eliom_content.Html5.F.post_form ~service:(logout_coservice ())
     (fun () ->
       [span [
-        Eliom_output.Html5.string_input ~input_type:`Submit ~value:"Logout" ()
+        Eliom_content.Html5.F.string_input ~input_type:`Submit ~value:"Logout" ()
       ]])
 
 let display_state ?in_progress_element () =
@@ -233,8 +233,8 @@ let display_state ?in_progress_element () =
                 login_form ?set_visibility_to:in_progress_element ()]
              else
                [pcdata ": ";
-                Eliom_output.Html5.a
-                  ~service:Eliom_services.https_void_coservice'
+                Eliom_content.Html5.F.a
+                  ~service:Eliom_service.https_void_coservice'
                   [pcdata "Login with HTTPS"] ();
                pcdata "."]
              

@@ -1,10 +1,10 @@
-OASISFormat: 0.2
+OASISFormat: 0.3
 Name:        Ocsibase
 Version:     0.0
 Synopsis:    Some Website
 Authors:     Sebastien Mondet
 License:     ISC
-Plugins:     META (0.2)
+Plugins:     META (0.3)
 BuildTools:  ocamlbuild
 
 Executable "ocsibase-manager"

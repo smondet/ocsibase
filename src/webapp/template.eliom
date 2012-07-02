@@ -27,18 +27,18 @@ let in_progress_animation_div () =
                     background-color: rgba(200, 200, 200, 0.5);";
            a_id in_progress_animation_id ]
     [ img 
-        ~src:(uri_of_string "images/loader.gif")
+        ~src:(Eliom_content.Xml.uri_of_string "images/loader.gif")
         ~alt:"in progress notification" () ]
 
 let in_progress_animation_handler unique_elt = 
-  Eliom_services.onload {{
-    (Eliom_client.Html5.of_element %unique_elt)##onclick
+  Eliom_service.onload {{
+    (Eliom_content.Html5.To_dom.of_element %unique_elt)##onclick
     <- Dom_html.(handler (fun ev ->
       begin match taggedEvent ev with
       | MouseEvent me when me##ctrlKey = Js._true || me##shiftKey = Js._true
                            || me##button = 1 ->
         (* Dirty way of avoiding the 'open in new tab/window' *)
-        Eliom_pervasives.debug "Mouse Event! Ctrl: %b, Button: %d"
+        Eliom_lib.debug "Mouse Event! Ctrl: %b, Button: %d"
           (Js.to_bool me##ctrlKey) me##button
       | _ ->
         (get_element_exn %in_progress_animation_id) ##style##visibility <-
@@ -71,9 +71,9 @@ let rec html_of_error poly_error =
 let a_link ?(a=[]) service content args =
   let unique_elt =
     let aa = a in
-    HTML5.M.(unique
+    Eliom_content.Html5.F.((*unique*)
              (span
-                [Eliom_output.Html5.a ~a:aa ~service:(service ()) content args]))
+                [Eliom_content.Html5.F.a ~a:aa ~service:(service ()) content args]))
   in
   in_progress_animation_handler unique_elt;
   unique_elt
@@ -84,9 +84,9 @@ let default ?(title) content =
     Html5.(
       html
         (head (title (pcdata page_title)) [
-          link ~rel:[`Stylesheet] ~href:(uri_of_string "ocsibase.css") ();
-          link ~rel:[`Stylesheet] ~href:(Eliom_output.Html5.make_uri
-                                           ~service:Services.(stylesheet ()) ()) ();
+          link ~rel:[`Stylesheet] ~href:(Eliom_content.Xml.uri_of_string "ocsibase.css") ();
+          link ~rel:[`Stylesheet] ~href:(Eliom_content.Html5.F.make_uri
+              ~service:Services.(stylesheet ()) ()) ();
         ])
         (body [
           in_progress_animation_div ();

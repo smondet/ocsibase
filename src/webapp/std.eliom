@@ -16,14 +16,14 @@
 include Core.Std
 
 module Html5 = struct
-  include Eliom_pervasives.HTML5.M
+  include Eliom_content.Html5.F
   let pcdataf fmt = ksprintf pcdata fmt
   let codef fmt = ksprintf (fun s -> code [pcdata s]) fmt
-  let a_hreff fmt = ksprintf (fun s -> a_href (XML.uri_of_string s)) fmt
+  let a_hreff fmt = ksprintf (fun s -> a_href (Eliom_content.Html5.F.uri_of_string (fun () -> s))) fmt
 end
   
 module Output_app =
-  Eliom_output.Eliom_appl (struct
+  Eliom_registration.App (struct
     let application_name = "ocsibase"
   end)
 
