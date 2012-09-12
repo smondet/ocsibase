@@ -19,7 +19,9 @@ module Html5 = struct
   include Eliom_content.Html5.F
   let pcdataf fmt = ksprintf pcdata fmt
   let codef fmt = ksprintf (fun s -> code [pcdata s]) fmt
-  let a_hreff fmt = ksprintf (fun s -> a_href (Eliom_content.Html5.F.uri_of_string (fun () -> s))) fmt
+  let a_hreff fmt =
+    ksprintf (fun s -> a_href (Xml.uri_of_string s)) fmt
+                                 (* (fun () -> s))) fmt *)
 end
   
 module Output_app =

@@ -23,7 +23,7 @@ static:
 	    -package ocsigenserver,ocsigenserver.ext.ocsipersist-sqlite  \
 	    -package eliom.server,ocsigenserver.ext.staticmod,core  \
              -I _build/src/simple_pam/ simple_pam.cmxa \
-	     _build/src/app/ocsimgr.cmx \
+	     _build/ocsibase/ocsibase.cmxa \
 	     server_main.cmx -o ocsibaseserver -linkpkg -thread
 
 install: build
